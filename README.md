@@ -125,9 +125,11 @@ ENABLE_LOGGING = true
 
 ### 4. Free Mode Setup
 For free operation on Streamlit Cloud:
-- **Option 1**: Set `OPENROUTER_API_KEY` (sign up at openrouter.ai for free $1 credit)
-- **Option 2**: Don't set any API keys - app will fall back to local transformers
-- OpenRouter free tier provides access to high-quality models
+- **Recommended**: Set `OPENROUTER_API_KEY` (sign up at openrouter.ai for free $1 credit)
+- **Important**: Local transformers may fail on Streamlit Cloud due to memory limitations
+- **Note**: Without API keys, the app will show "No Provider Available" error
+
+**⚠️ For Streamlit Cloud deployment, OpenRouter API key is required as local models are unreliable in cloud environments.**
 
 ## 🛠️ Configuration Options
 
@@ -205,9 +207,10 @@ Try these example questions with uploaded PDFs:
 ### Common Issues
 
 **1. "No LLM providers available"**
-- Ensure at least one provider is configured
+- **Streamlit Cloud**: Set `OPENROUTER_API_KEY` in secrets (local models don't work reliably)
+- **Local**: Ensure at least one provider is configured
 - Check API keys and network connectivity
-- Try switching to local mode in sidebar
+- For OpenRouter: Sign up at openrouter.ai for free $1 credit
 
 **2. "No relevant documents found"**
 - Verify PDFs were processed successfully

@@ -153,7 +153,7 @@ class OpenRouterLLM:
 class LocalTransformersLLM:
     """Local Transformers model wrapper as fallback."""
     
-    def __init__(self, model_name: str = "microsoft/DialoGPT-medium", 
+    def __init__(self, model_name: str = "distilgpt2", 
                  max_tokens: int = 512, temperature: float = 0.2):
         self.model_name = model_name
         self.max_tokens = max_tokens
@@ -161,8 +161,12 @@ class LocalTransformersLLM:
         self.tokenizer = None
         self.model = None
         
-        # Initialize model
-        self._initialize_model()
+        # Initialize model with error handling
+        try:
+            self._initialize_model()
+        except Exception as e:
+            logger.error(f"Failed to initialize local model: {e}")
+            # Don't raise - let the model be None and is_available() return False
     
     def _initialize_model(self):
         """Initialize the local Transformers model."""
@@ -302,15 +306,15 @@ class LLMManager:
             providers_tried.append(f"Local Transformers (error: {e})")
             logger.warning(f"Failed to initialize Local Transformers: {e}")
         
-        # If no LLM is available, raise an error
-        error_msg = f"No LLM providers available. Tried: {', '.join(providers_tried)}"
-        logger.error(error_msg)
-        raise RuntimeError(error_msg)
+        # If no LLM is available, set up a dummy provider with helpful error message
+        logger.warning(f"No LLM providers available. Tried: {', '.join(providers_tried)}")
+        self.current_llm = None
+        self.current_provider = "No Provider Available"
     
     def generate(self, prompt: str, **kwargs) -> str:
         """Generate text using the current LLM."""
         if self.current_llm is None:
-            raise RuntimeError("No LLM available for text generation")
+            raise RuntimeError("No LLM available for text generation. Please configure an API key for OpenAI or OpenRouter.")
         
         try:
             return self.current_llm.generate(prompt, **kwargs)
@@ -358,7 +362,7 @@ class LLMManager:
                 
             elif provider.lower() == "local":
                 self.current_llm = LocalTransformersLLM(
-                    model_name=kwargs.get('model_name', "microsoft/DialoGPT-medium"),
+                    model_name=kwargs.get('model_name', "distilgpt2"),
                     max_tokens=kwargs.get('max_tokens', self.config.max_tokens),
                     temperature=kwargs.get('temperature', self.config.temperature)
                 )

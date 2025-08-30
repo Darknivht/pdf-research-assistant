@@ -82,7 +82,14 @@ def display_sidebar(system: Dict[str, Any]):
     st.sidebar.subheader("🤖 LLM Provider")
     
     current_provider = system['llm_manager'].current_provider
-    st.sidebar.info(f"Current: {current_provider}")
+    
+    if current_provider == "No Provider Available":
+        st.sidebar.error("⚠️ No LLM Provider Available")
+        st.sidebar.warning("Configure an API key:")
+        st.sidebar.markdown("• **OpenRouter**: Sign up at openrouter.ai (free $1 credit)")
+        st.sidebar.markdown("• **OpenAI**: Add your OpenAI API key")
+    else:
+        st.sidebar.info(f"Current: {current_provider}")
     
     # Provider switching
     provider_options = ["OpenAI", "OpenRouter", "Local"]
