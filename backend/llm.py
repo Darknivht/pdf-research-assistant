@@ -81,11 +81,12 @@ class OpenAILLM:
             return False
 
 class OpenRouterLLM:
-    """OpenRouter LLM wrapper for free models."""
+    """OpenRouter LLM wrapper with API key authentication."""
     
-    def __init__(self, base_url: str = "https://openrouter.ai/api/v1", 
-                 model_name: str = "openrouter/auto",
+    def __init__(self, api_key: str, base_url: str = "https://openrouter.ai/api/v1", 
+                 model_name: str = "meta-llama/llama-3.2-3b-instruct:free",
                  max_tokens: int = 512, temperature: float = 0.2):
+        self.api_key = api_key
         self.base_url = base_url.rstrip('/')
         self.model_name = model_name
         self.max_tokens = max_tokens
@@ -93,8 +94,9 @@ class OpenRouterLLM:
         
         # Headers for requests
         self.headers = {
+            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/your-repo",  # Required for some free models
+            "HTTP-Referer": "https://github.com/pdf-research-assistant",
             "X-Title": "PDF Research Assistant"
         }
     
@@ -260,25 +262,27 @@ class LLMManager:
                 providers_tried.append(f"OpenAI (error: {e})")
                 logger.warning(f"Failed to initialize OpenAI: {e}")
         
-        # 2. Try OpenRouter free models
-        try:
-            self.current_llm = OpenRouterLLM(
-                base_url=self.config.openrouter_base_url,
-                model_name=self.config.openrouter_model,
-                max_tokens=self.config.max_tokens,
-                temperature=self.config.temperature
-            )
-            
-            if self.current_llm.is_available():
-                self.current_provider = "OpenRouter"
-                logger.info("Successfully initialized OpenRouter LLM")
-                return
-            else:
-                providers_tried.append("OpenRouter (not available)")
+        # 2. Try OpenRouter if API key is available
+        if self.config.openrouter_api_key:
+            try:
+                self.current_llm = OpenRouterLLM(
+                    api_key=self.config.openrouter_api_key,
+                    base_url=self.config.openrouter_base_url,
+                    model_name=self.config.openrouter_model,
+                    max_tokens=self.config.max_tokens,
+                    temperature=self.config.temperature
+                )
                 
-        except Exception as e:
-            providers_tried.append(f"OpenRouter (error: {e})")
-            logger.warning(f"Failed to initialize OpenRouter: {e}")
+                if self.current_llm.is_available():
+                    self.current_provider = "OpenRouter"
+                    logger.info("Successfully initialized OpenRouter LLM")
+                    return
+                else:
+                    providers_tried.append("OpenRouter (not available)")
+                    
+            except Exception as e:
+                providers_tried.append(f"OpenRouter (error: {e})")
+                logger.warning(f"Failed to initialize OpenRouter: {e}")
         
         # 3. Try local Transformers as fallback
         try:
@@ -340,7 +344,11 @@ class LLMManager:
                 self.current_provider = "OpenAI"
                 
             elif provider.lower() == "openrouter":
+                if not self.config.openrouter_api_key:
+                    raise ValueError("OpenRouter API key not available")
+                
                 self.current_llm = OpenRouterLLM(
+                    api_key=self.config.openrouter_api_key,
                     base_url=self.config.openrouter_base_url,
                     model_name=kwargs.get('model_name', self.config.openrouter_model),
                     max_tokens=kwargs.get('max_tokens', self.config.max_tokens),

@@ -11,8 +11,8 @@ from pathlib import Path
 import faiss
 from sentence_transformers import SentenceTransformer
 from langchain.schema import Document
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from .utils import Config, save_pickle, load_pickle, save_json, load_json
 

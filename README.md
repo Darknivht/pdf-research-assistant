@@ -63,17 +63,25 @@ export MODEL_NAME="gpt-3.5-turbo"
 ```
 
 ### 2. OpenRouter (Free Tier Available)
-OpenRouter provides access to free models without requiring payment:
+OpenRouter provides access to free models with API key (sign up at openrouter.ai):
 
 ```bash
+export OPENROUTER_API_KEY="your-openrouter-api-key"
 export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
-export OPENROUTER_MODEL="openrouter/auto"
+export OPENROUTER_MODEL="meta-llama/llama-3.2-3b-instruct:free"
 ```
 
 **Free Models Available:**
-- `openrouter/auto` - Automatically selects best free model
-- `microsoft/DialoGPT-medium` - Free conversational model
-- Various other community models
+- `meta-llama/llama-3.2-3b-instruct:free` - Meta Llama 3.2 3B (free tier)
+- `microsoft/phi-3-mini-128k-instruct:free` - Microsoft Phi-3 Mini (free tier)
+- `google/gemma-2-9b-it:free` - Google Gemma 2 9B (free tier)
+- Various other free community models
+
+**Getting OpenRouter API Key:**
+1. Visit https://openrouter.ai/
+2. Sign up for a free account
+3. Go to API Keys section and generate a new key
+4. Free tier includes $1 of credits to get started
 
 ### 3. Local Transformers (Offline)
 No API key required - runs entirely offline:
@@ -84,7 +92,7 @@ No API key required - runs entirely offline:
 ### Provider Priority
 The system automatically selects providers in this order:
 1. **OpenAI** (if `OPENAI_API_KEY` is set)
-2. **OpenRouter** (free models available)
+2. **OpenRouter** (if `OPENROUTER_API_KEY` is set - free tier available)
 3. **Local Transformers** (offline fallback)
 
 ## 📊 Streamlit Cloud Deployment
@@ -104,9 +112,10 @@ In your Streamlit Cloud dashboard, add these secrets:
 ```toml
 # .streamlit/secrets.toml
 [env]
-OPENAI_API_KEY = "your-openai-key"  # Optional
+OPENAI_API_KEY = "your-openai-key"  # Optional - for paid OpenAI
+OPENROUTER_API_KEY = "your-openrouter-key"  # Free tier available
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-OPENROUTER_MODEL = "openrouter/auto"
+OPENROUTER_MODEL = "meta-llama/llama-3.2-3b-instruct:free"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 TOP_K = 4
 MAX_TOKENS = 512
@@ -115,10 +124,10 @@ ENABLE_LOGGING = true
 ```
 
 ### 4. Free Mode Setup
-For completely free operation on Streamlit Cloud:
-- **Don't set** `OPENAI_API_KEY`
-- Use default OpenRouter free models
-- The app will automatically fall back to free providers
+For free operation on Streamlit Cloud:
+- **Option 1**: Set `OPENROUTER_API_KEY` (sign up at openrouter.ai for free $1 credit)
+- **Option 2**: Don't set any API keys - app will fall back to local transformers
+- OpenRouter free tier provides access to high-quality models
 
 ## 🛠️ Configuration Options
 
@@ -127,8 +136,9 @@ For completely free operation on Streamlit Cloud:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OPENAI_API_KEY` | - | OpenAI API key (optional) |
+| `OPENROUTER_API_KEY` | - | OpenRouter API key (free tier available) |
 | `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | OpenRouter API endpoint |
-| `OPENROUTER_MODEL` | `openrouter/auto` | OpenRouter model name |
+| `OPENROUTER_MODEL` | `meta-llama/llama-3.2-3b-instruct:free` | OpenRouter model name |
 | `MODEL_NAME` | `gpt-3.5-turbo` | OpenAI model name |
 | `EMBEDDING_MODEL` | `sentence-transformers/all-MiniLM-L6-v2` | Sentence transformer model |
 | `TOP_K` | `4` | Number of documents to retrieve |

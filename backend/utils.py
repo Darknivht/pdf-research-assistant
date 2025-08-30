@@ -19,9 +19,10 @@ class Config:
     def __init__(self):
         # LLM Configuration
         self.openai_api_key = os.getenv('OPENAI_API_KEY', '')
+        self.openrouter_api_key = os.getenv('OPENROUTER_API_KEY', '')
         self.openrouter_base_url = os.getenv('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
         self.model_name = os.getenv('MODEL_NAME', 'gpt-3.5-turbo')
-        self.openrouter_model = os.getenv('OPENROUTER_MODEL', 'openrouter/auto')
+        self.openrouter_model = os.getenv('OPENROUTER_MODEL', 'meta-llama/llama-3.2-3b-instruct:free')
         
         # Embedding Configuration
         self.embedding_model = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
