@@ -1,0 +1,19 @@
+[global]
+# Force Python 3.10 for Streamlit Cloud compatibility
+pythonPath = "python3.10"
+
+[server]
+# Server configuration
+port = 8501
+maxUploadSize = 200
+
+[browser]
+# Browser configuration
+gatherUsageStats = false
+
+[theme]
+# UI theme
+primaryColor = "#1f77b4"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"

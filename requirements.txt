@@ -1,0 +1,16 @@
+streamlit
+langchain
+langchain-openai
+langchain-community
+faiss-cpu
+openai
+python-dotenv
+pypdf
+tiktoken
+numpy
+pandas
+requests
+httpx
+torch
+transformers
+sentence-transformers
